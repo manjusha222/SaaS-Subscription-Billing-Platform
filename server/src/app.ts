@@ -9,9 +9,9 @@ const app = Express();
 
 app.use(cors({
   origin: [
-    "http://localhost:5173",
-    "https://your-app.vercel.app" 
-  ],
+      "http://localhost:5173",
+      "https://saa-s-subscription-billing-platform.vercel.app",
+    ],
   credentials: true
 }));
 
