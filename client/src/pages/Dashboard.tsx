@@ -160,7 +160,7 @@ function Dashboard() {
         {/* Current Plan */}
         <div className="mb-10">
           {activePlan &&(
-            <p className="text-lg font-semibold text-gray-700 mb-3">
+            <p className="text-lg font-semibold text-red-500 mb-3">
               Your Current Plan
             </p>
           )}
