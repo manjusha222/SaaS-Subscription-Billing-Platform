@@ -159,6 +159,12 @@ function Dashboard() {
 
         {/* Current Plan */}
         <div className="mb-10">
+          {activePlan &&(
+            <p className="text-lg font-semibold text-gray-700 mb-3">
+              Your Current Plan
+            </p>
+          )}
+          
           {activePlan ? (
             <div
               className={`bg-white p-6 rounded-xl shadow-md ${

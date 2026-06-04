@@ -62,7 +62,7 @@ function Plans() {
             </>
           ) : Array.isArray(plans) && plans.length > 0 ? (
             plans.map((plan) => (
-              <div key={plan.id} className="bg-white p-6 rounded-xl shadow-md">
+              <div key={plan.id} className="bg-white p-6 rounded-xl shadow-md flex flex-col">
                 <h2 className="text-2xl font-medium mb-3">{plan.name}</h2>
                 <p className="text-3xl text-blue-600 font-medium mb-4">
                   ₹ {plan.price}
@@ -70,10 +70,10 @@ function Plans() {
                     /month
                   </span>
                 </p>
-                <p className="mb-6 text-gray-600">{plan.features}</p>
+                <p className="text-gray-600 grow">{plan.features}</p>
                 <button
                   onClick={() => handleSubscribe(plan.id)}
-                  className="w-full text-white bg-blue-600 py-2 rounded-lg hover:bg-blue-800 transition-colors"
+                  className="w-full text-white bg-blue-600 py-2 rounded-lg hover:bg-blue-800 transition-colors mt-6"
                 >
                   Subscribe
                 </button>
