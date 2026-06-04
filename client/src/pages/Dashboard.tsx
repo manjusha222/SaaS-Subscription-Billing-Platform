@@ -149,7 +149,7 @@ function Dashboard() {
       ? (daysUntil(activePlan.expires_at) ?? 99) <= 7
       : false;
 
-  // ✅ Show skeleton while loading — no flash of wrong content
+  //  Show skeleton while loading 
   if (loading) return <DashboardSkeleton />;
 
   return (
@@ -159,10 +159,6 @@ function Dashboard() {
 
         {/* Current Plan */}
         <div className="mb-10">
-          <button className="bg-red-600 text-white px-5 py-2 rounded-full font-semibold mb-4">
-            Your Current Plan
-          </button>
-
           {activePlan ? (
             <div
               className={`bg-white p-6 rounded-xl shadow-md ${
@@ -236,9 +232,9 @@ function Dashboard() {
               </div>
             </div>
           ) : (
-            // ✅ Empty state — only shown AFTER loading is complete
+            // Empty state — only shown AFTER loading is complete
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-600 to-blue-400 px-8 py-8">
+              <div className="bg-grt-to-r from-blue-600 to-blue-400 px-8 py-8">
                 <p className="text-blue-100 text-sm mb-1">Current Plan</p>
                 <h2 className="text-white text-2xl font-bold">No Active Plan</h2>
                 <p className="text-blue-100 text-sm mt-1">
