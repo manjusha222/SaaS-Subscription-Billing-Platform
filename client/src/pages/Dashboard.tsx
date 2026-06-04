@@ -5,7 +5,7 @@ import { subscribePlan } from "../services/subscriptionService";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { generateInvoice } from "../utils/generateInvoice";
-import { useAuth } from "../context/AuthContext"; // ✅ added
+import { useAuth } from "../context/AuthContext";
 
 interface Subscription {
   id: number;
@@ -18,7 +18,6 @@ interface Subscription {
   expires_at: string | null;
 }
 
-// Returns how many days until a date (negative = already expired)
 function daysUntil(dateStr: string | null): number | null {
   if (!dateStr) return null;
   const diff = new Date(dateStr).getTime() - Date.now();
@@ -48,10 +47,58 @@ function ExpiryBadge({ expiresAt }: { expiresAt: string | null }) {
   );
 }
 
+// ── Loading Skeleton ──────────────────────────────────────────────────────────
+function DashboardSkeleton() {
+  return (
+    <DashboardLayout>
+      <div className="animate-pulse">
+        {/* Title skeleton */}
+        <div className="h-8 bg-gray-200 rounded w-40 mb-6" />
+
+        {/* Current plan skeleton */}
+        <div className="mb-10">
+          <div className="h-10 bg-gray-200 rounded-full w-44 mb-4" />
+          <div className="bg-white p-6 rounded-xl shadow-md">
+            <div className="flex justify-between mb-4">
+              <div className="h-7 bg-gray-200 rounded w-32" />
+              <div className="h-6 bg-gray-200 rounded-full w-24" />
+            </div>
+            <div className="h-5 bg-gray-200 rounded w-28 mb-3" />
+            <div className="h-5 bg-gray-200 rounded w-24 mb-3" />
+            <div className="h-5 bg-gray-200 rounded w-48 mb-5" />
+            <div className="flex gap-3">
+              <div className="h-10 bg-gray-200 rounded-lg w-32" />
+              <div className="h-10 bg-gray-200 rounded-lg w-40" />
+            </div>
+          </div>
+        </div>
+
+        {/* History skeleton */}
+        <div className="h-7 bg-gray-200 rounded w-52 mb-5" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2].map((i) => (
+            <div key={i} className="bg-gray-100 p-5 rounded-xl">
+              <div className="flex justify-between mb-3">
+                <div className="h-6 bg-gray-200 rounded w-28" />
+                <div className="h-5 bg-gray-200 rounded-full w-20" />
+              </div>
+              <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+              <div className="h-4 bg-gray-200 rounded w-20 mb-2" />
+              <div className="h-4 bg-gray-200 rounded w-32" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </DashboardLayout>
+  );
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
 function Dashboard() {
   const navigate = useNavigate();
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSubscriptions();
@@ -59,10 +106,13 @@ function Dashboard() {
 
   const fetchSubscriptions = async () => {
     try {
+      setLoading(true);
       const response = await getMySubscriptions();
       setSubscriptions(response.data || []);
     } catch (error) {
       toast.error("Failed to load subscriptions.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,7 +128,6 @@ function Dashboard() {
 
   const handleDownloadInvoice = () => {
     if (!activePlan) return;
-
     generateInvoice({
       userName: user?.name || "User",
       userEmail: user?.email || "",
@@ -90,7 +139,6 @@ function Dashboard() {
         : "N/A",
       invoiceNumber: `INV-${activePlan.id}-${Date.now().toString().slice(-4)}`,
     });
-
     toast.success("Invoice downloaded!");
   };
 
@@ -100,6 +148,9 @@ function Dashboard() {
     activePlan?.expires_at
       ? (daysUntil(activePlan.expires_at) ?? 99) <= 7
       : false;
+
+  // ✅ Show skeleton while loading — no flash of wrong content
+  if (loading) return <DashboardSkeleton />;
 
   return (
     <DashboardLayout>
@@ -122,8 +173,7 @@ function Dashboard() {
               {isExpiringSoon && (
                 <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-3 mb-4 flex items-center gap-2">
                   <span className="text-orange-600 text-sm font-medium">
-                    ⚠️ Your plan is expiring soon. Renew now to avoid
-                    interruption.
+                    ⚠️ Your plan is expiring soon. Renew now to avoid interruption.
                   </span>
                 </div>
               )}
@@ -146,10 +196,11 @@ function Dashboard() {
                 <p className="mb-2 text-sm font-medium">
                   Renewal date:{" "}
                   <span className="font-medium text-black">
-                    {new Date(activePlan.expires_at).toLocaleDateString(
-                      "en-IN",
-                      { day: "numeric", month: "long", year: "numeric" }
-                    )}
+                    {new Date(activePlan.expires_at).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </span>
                 </p>
               )}
@@ -159,7 +210,6 @@ function Dashboard() {
                 <span className="ml-2">{activePlan.features}</span>
               </p>
 
-              {/* Download Invoice button */}
               <div className="flex gap-3">
                 <button
                   onClick={() => navigate("/plans")}
@@ -186,11 +236,9 @@ function Dashboard() {
               </div>
             </div>
           ) : (
-            
+            // ✅ Empty state — only shown AFTER loading is complete
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-
-              {/* Top Banner */}
-              <div className="bg-linear-to-r from-blue-600 to-blue-400 px-8 py-8">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-400 px-8 py-8">
                 <p className="text-blue-100 text-sm mb-1">Current Plan</p>
                 <h2 className="text-white text-2xl font-bold">No Active Plan</h2>
                 <p className="text-blue-100 text-sm mt-1">
@@ -198,39 +246,32 @@ function Dashboard() {
                 </p>
               </div>
 
-              {/* Body */}
               <div className="px-8 py-6">
                 <p className="text-sm font-semibold text-gray-400 mb-4">
                   What you will get after subscribing
                 </p>
 
-               
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-
                   <div className="flex flex-col items-center text-center bg-gray-50 rounded-xl px-3 py-4 border border-gray-100">
                     <span className="text-2xl mb-2">📋</span>
                     <p className="text-xs font-semibold text-gray-500">Plan Management</p>
                     <p className="text-xs text-gray-400 mt-1">Subscribe, change or cancel anytime</p>
                   </div>
-
                   <div className="flex flex-col items-center text-center bg-gray-50 rounded-xl px-3 py-4 border border-gray-100">
                     <span className="text-2xl mb-2">📄</span>
                     <p className="text-xs font-semibold text-gray-500">Invoice Download</p>
                     <p className="text-xs text-gray-400 mt-1">Download PDF invoice for your plan</p>
                   </div>
-
                   <div className="flex flex-col items-center text-center bg-gray-50 rounded-xl px-3 py-4 border border-gray-100">
                     <span className="text-2xl mb-2">🔔</span>
                     <p className="text-xs font-semibold text-gray-500">Expiry Alerts</p>
                     <p className="text-xs text-gray-400 mt-1">Get notified before plan expires</p>
                   </div>
-
                   <div className="flex flex-col items-center text-center bg-gray-50 rounded-xl px-3 py-4 border border-gray-100">
                     <span className="text-2xl mb-2">📅</span>
                     <p className="text-xs font-semibold text-gray-500">Billing History</p>
                     <p className="text-xs text-gray-400 mt-1">Track all your past subscriptions</p>
                   </div>
-
                 </div>
 
                 <button
@@ -239,7 +280,6 @@ function Dashboard() {
                 >
                   View Plans & Subscribe
                 </button>
-
               </div>
             </div>
           )}
@@ -248,7 +288,6 @@ function Dashboard() {
         {/* Subscription History */}
         <div>
           <h2 className="text-2xl font-bold mb-5">Subscription History</h2>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {historyPlans.length > 0 ? (
               historyPlans.map((sub) => (
@@ -257,29 +296,21 @@ function Dashboard() {
                     <h3 className="text-xl font-semibold">{sub.name}</h3>
                     <ExpiryBadge expiresAt={sub.expires_at} />
                   </div>
-
                   <p className="mb-1">₹{sub.price}/month</p>
-
                   <p className="mb-1">
                     Status:
-                    <span
-                      className={`ml-2 font-medium ${
-                        sub.status === "active"
-                          ? "text-green-600"
-                          : "text-red-500"
-                      }`}
-                    >
+                    <span className={`ml-2 font-medium ${
+                      sub.status === "active" ? "text-green-600" : "text-red-500"
+                    }`}>
                       {sub.status}
                     </span>
                   </p>
-
                   <p className="mb-1">
                     Subscribed:{" "}
                     <span className="ml-1">
                       {new Date(sub.created_at).toLocaleDateString()}
                     </span>
                   </p>
-
                   {sub.expires_at && (
                     <p>
                       Expires:{" "}

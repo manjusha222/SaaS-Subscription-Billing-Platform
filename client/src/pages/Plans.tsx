@@ -1,7 +1,7 @@
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useEffect, useState } from "react";
 import { getPlans } from "../services/planService";
-import { subscribePlan } from "../services/subscriptionService"; 
+import { subscribePlan } from "../services/subscriptionService";
 import toast from "react-hot-toast";
 
 interface Plan {
@@ -13,6 +13,7 @@ interface Plan {
 
 function Plans() {
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchPlans();
@@ -20,10 +21,13 @@ function Plans() {
 
   const fetchPlans = async () => {
     try {
+      setLoading(true); 
       const response = await getPlans();
       setPlans(response.data || []);
     } catch (error) {
       toast.error("Failed to load plans. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,7 +46,21 @@ function Plans() {
         <h1 className="text-3xl font-bold mb-8">Subscription Plans</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {Array.isArray(plans) && plans.length > 0 ? (
+
+          {/* Skeleton cards while loading */}
+          {loading ? (
+            <>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white p-6 rounded-xl shadow-md animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded w-24 mb-3" />
+                  <div className="h-8 bg-gray-200 rounded w-20 mb-4" />
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-6" />
+                  <div className="h-10 bg-gray-200 rounded-lg w-full" />
+                </div>
+              ))}
+            </>
+          ) : Array.isArray(plans) && plans.length > 0 ? (
             plans.map((plan) => (
               <div key={plan.id} className="bg-white p-6 rounded-xl shadow-md">
                 <h2 className="text-2xl font-medium mb-3">{plan.name}</h2>
@@ -62,8 +80,11 @@ function Plans() {
               </div>
             ))
           ) : (
-            <p>No Plans Available</p>
+            <div className="col-span-full text-center py-10">
+              <p className="text-gray-500 text-lg">No Plans Available</p>
+            </div>
           )}
+
         </div>
       </div>
     </DashboardLayout>

@@ -7,6 +7,7 @@ function Profile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true); // ✅ for initial fetch
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -15,11 +16,14 @@ function Profile() {
 
   const fetchProfile = async () => {
     try {
+      setPageLoading(true);
       const response = await getProfile();
       setName(response.data.name);
       setEmail(response.data.email);
     } catch (error) {
       toast.error("Failed to load profile.");
+    } finally {
+      setPageLoading(false); // ✅ stop loading after fetch
     }
   };
 
@@ -37,10 +41,47 @@ function Profile() {
     }
   };
 
+  // ✅ Show skeleton while fetching profile data
+  if (pageLoading) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
+          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-xl p-10 animate-pulse">
+            {/* Avatar + title skeleton */}
+            <div className="flex items-center gap-5 mb-10">
+              <div className="w-20 h-20 rounded-full bg-gray-200" />
+              <div>
+                <div className="h-7 bg-gray-200 rounded w-36 mb-2" />
+                <div className="h-4 bg-gray-200 rounded w-52" />
+              </div>
+            </div>
+
+            {/* Name field skeleton */}
+            <div className="mb-6">
+              <div className="h-5 bg-gray-200 rounded w-24 mb-2" />
+              <div className="h-14 bg-gray-200 rounded-xl w-full" />
+            </div>
+
+            {/* Email field skeleton */}
+            <div className="mb-8">
+              <div className="h-5 bg-gray-200 rounded w-32 mb-2" />
+              <div className="h-14 bg-gray-200 rounded-xl w-full" />
+            </div>
+
+            {/* Button skeleton */}
+            <div className="h-12 bg-gray-200 rounded-xl w-36" />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white w-full max-w-2xl rounded-3xl shadow-xl p-10">
+
+          {/* Header */}
           <div className="flex items-center gap-5 mb-10">
             <div className="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white text-3xl font-bold">
               {name ? name.charAt(0).toUpperCase() : "U"}
@@ -52,6 +93,7 @@ function Profile() {
           </div>
 
           <form onSubmit={handleUpdate}>
+            {/* Name field */}
             <div className="mb-6">
               <label className="block text-lg font-medium mb-2">
                 Full Name
@@ -69,6 +111,7 @@ function Profile() {
               />
             </div>
 
+            {/* Email field */}
             <div className="mb-8">
               <label className="block text-lg font-medium mb-2">
                 Email Address
@@ -86,6 +129,7 @@ function Profile() {
               />
             </div>
 
+            {/* Buttons */}
             {!isEditing ? (
               <button
                 type="button"
@@ -113,6 +157,7 @@ function Profile() {
               </div>
             )}
           </form>
+
         </div>
       </div>
     </DashboardLayout>
