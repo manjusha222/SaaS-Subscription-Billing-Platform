@@ -238,17 +238,18 @@ INSERT INTO plans (name, price, features) VALUES
 ## 📸 Screenshots
 
 > Dashboard — Active Plan
-
-
+<img width="1340" height="679" alt="Dashboard" src="https://github.com/user-attachments/assets/78a3fc45-cf67-4a93-bdbd-01fe4193073e" />
 > Dashboard — New User Empty State
 
 > Plans Page
-
+<img width="1350" height="667" alt="Plans" src="https://github.com/user-attachments/assets/91e494d3-d165-4d85-9361-163e5fd37fbc" />
 
 > Invoice PDF Download
 
+<img width="1251" height="618" alt="Screenshot 2026-06-06 072709" src="https://github.com/user-attachments/assets/abaf9151-cfda-4cd4-b8e3-c8bfef34edf1" />
 
 > Profile Page
+<img width="1295" height="624" alt="Screenshot 2026-06-06 072749" src="https://github.com/user-attachments/assets/271503d6-54dc-4364-9134-1c337bccd5e4" />
 
 ---
 
