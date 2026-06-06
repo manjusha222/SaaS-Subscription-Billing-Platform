@@ -7,7 +7,7 @@ function Profile() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true); // ✅ for initial fetch
+  const [pageLoading, setPageLoading] = useState(true); 
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ function Profile() {
     } catch (error) {
       toast.error("Failed to load profile.");
     } finally {
-      setPageLoading(false); // ✅ stop loading after fetch
+      setPageLoading(false); // stop ing after fetch
     }
   };
 
@@ -41,7 +41,7 @@ function Profile() {
     }
   };
 
-  // ✅ Show skeleton while fetching profile data
+  // Show skeleton while fetching profile data
   if (pageLoading) {
     return (
       <DashboardLayout>

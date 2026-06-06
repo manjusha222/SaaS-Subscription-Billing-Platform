@@ -240,7 +240,7 @@ function Dashboard() {
           ) : (
             // Empty state — only shown AFTER loading is complete
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-              <div className="bg-grt-to-r from-blue-600 to-blue-400 px-8 py-8">
+              <div className="bg-gradient-to-r from-blue-600 to-blue-400 px-8 py-8">
                 <p className="text-blue-100 text-sm mb-1">Current Plan</p>
                 <h2 className="text-white text-2xl font-bold">No Active Plan</h2>
                 <p className="text-blue-100 text-sm mt-1">
